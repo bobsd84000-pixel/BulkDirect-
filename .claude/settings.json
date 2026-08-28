@@ -1,0 +1,71 @@
+{
+  "project": "BulkDirect",
+  "description": "Système de traitement batch de produits avec Gemini",
+  "version": "1.0.0",
+
+  "skills": [
+    {
+      "name": "bulk-process",
+      "path": "./.claude/skills/bulk-process",
+      "shortcut": "/bulk-process",
+      "description": "Traiter les produits par batch"
+    },
+    {
+      "name": "data-analyze",
+      "path": "./.claude/skills/data-analyze",
+      "shortcut": "/data-analyze",
+      "description": "Analyser les données enrichies"
+    },
+    {
+      "name": "csv-export",
+      "path": "./.claude/skills/csv-export",
+      "shortcut": "/csv-export",
+      "description": "Exporter en CSV personnalisé"
+    },
+    {
+      "name": "batch-status",
+      "path": "./.claude/skills/batch-status",
+      "shortcut": "/batch-status",
+      "description": "Vérifier l'état du traitement"
+    }
+  ],
+
+  "workflows": [
+    {
+      "name": "daily-process",
+      "description": "Workflow quotidien complet",
+      "steps": [
+        "bulk-process --batch-size 50",
+        "data-analyze",
+        "csv-export --columns id,name,description,category",
+        "batch-status"
+      ]
+    },
+    {
+      "name": "quick-check",
+      "description": "Vérification rapide",
+      "steps": [
+        "batch-status --watch",
+        "data-analyze"
+      ]
+    }
+  ],
+
+  "permissions": {
+    "read": ["./data/*", "./exports/*", "./logs/*"],
+    "write": ["./exports/*", "./logs/*", "./backups/*"],
+    "execute": ["node", "bash"]
+  },
+
+  "environment": {
+    "NODE_ENV": "production",
+    "LOG_LEVEL": "info",
+    "DATA_DIR": "./data",
+    "EXPORT_DIR": "./exports"
+  },
+
+  "hooks": {
+    "pre-commit": "./.claude/hooks/pre-commit.sh",
+    "post-process": "./.claude/hooks/post-process.sh"
+  }
+}
