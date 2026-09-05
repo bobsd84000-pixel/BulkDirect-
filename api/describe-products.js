@@ -11,7 +11,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { parse, stringify } from 'csv-parse/sync';
+import { parse } from 'csv-parse/sync';
+import { stringify } from 'csv-stringify/sync';
 
 const GEMINI_API_KEY = process.env.GOOGLE_API_KEY;
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/v1';
