@@ -1,0 +1,14 @@
+name: Scan Skills
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**'
+      - '.claude/**'
+  push:
+    branches:
+      - main
+
+jobs:
+  skillspector:
+    uses: bobsd84000-pixel/security-workflows/.github/workflows/skillspector-scan.yml@main
