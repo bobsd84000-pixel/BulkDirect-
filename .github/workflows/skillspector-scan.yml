@@ -1,0 +1,59 @@
+name: SkillSpector Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    name: SkillSpector Scan
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install SkillSpector
+        run: npm install -g @anthropic-ai/skillspector
+
+      - name: Run SkillSpector
+        id: skillspector
+        run: skillspector scan --format json --output skillspector-report.json
+        continue-on-error: true
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skillspector-report
+          path: skillspector-report.json
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('skillspector-report.json', 'utf8'));
+
+            const comment = `## SkillSpector Scan Results
+
+Status: ${report.status || 'unknown'}
+Issues found: ${report.issues?.length || 0}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
