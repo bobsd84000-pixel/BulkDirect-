@@ -10,5 +10,25 @@ on:
       - main
 
 jobs:
-  skillspector:
-    uses: bobsd84000-pixel/security-workflows/.github/workflows/skillspector-scan.yml@main
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v2
+        with:
+          version: "0.4.0"
+      - run: |
+          git clone https://github.com/NVIDIA/SkillSpector /tmp/skillspector
+          cd /tmp/skillspector
+          uv pip install -e .
+      - run: |
+          SCAN_DIRS="${GITHUB_WORKSPACE}/skills ${GITHUB_WORKSPACE}/.claude/skills"
+          skillspector scan $SCAN_DIRS --output /tmp/report.json || true
+          cat /tmp/report.json
+      - run: |
+          CRITICAL=$(jq '[.[] | select(.severity == "critical")] | length' /tmp/report.json || echo "0")
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "❌ Found $CRITICAL critical issues"
+            exit 1
+          fi
+          echo "✅ No critical issues"
