@@ -1,6 +1,5 @@
-// src/App.jsx — remplace complètement par ceci:
-import BulkDirectLanding from './BulkDirectHeadroom'
+import BulkDirectLandingV2 from './BulkDirectLandingV2'
 
 export default function App() {
-  return <BulkDirectLanding />
+  return <BulkDirectLandingV2 />
 }
