@@ -1,25 +1,110 @@
 name: SkillSpector Scan
+
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - claude/**
+  workflow_call:
+    inputs:
+      seuil:
+        description: "Sévérité bloquante minimale : MEDIUM | HIGH | CRITICAL"
+        required: false
+        type: string
+        default: "HIGH"
   pull_request:
-    branches:
-      - main
-      - develop
-      - claude/**
+    paths:
+      - "skills/**"
+      - ".claude/**"
+  push:
+    paths:
+      - "skills/**"
+      - ".claude/**"
+
+permissions:
+  contents: read
 
 jobs:
   scan:
+    name: Scan obligatoire des skills
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - name: Run scan
-        run: echo "SkillSpector scan OK" && echo '{"status":"passed"}' > report.json
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python 3.12
+        uses: actions/setup-python@v5
         with:
-          name: report
-          path: report.json
+          python-version: "3.12"
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Installer SkillSpector
+        run: uv pip install --system git+https://github.com/NVIDIA/SkillSpector.git
+
+      - name: Repérer les dossiers de skills
+        id: cibles
+        run: |
+          CIBLES=$(find skills .claude -name SKILL.md -type f 2>/dev/null | xargs -r -n1 dirname | sort -u)
+          if [ -z "$CIBLES" ]; then
+            echo "Aucun SKILL.md trouvé — rien à scanner."
+            echo "vide=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "vide=false" >> "$GITHUB_OUTPUT"
+            echo "$CIBLES" > /tmp/cibles.txt
+            echo "Cibles :"; cat /tmp/cibles.txt
+          fi
+
+      - name: Scan bloquant
+        if: steps.cibles.outputs.vide == 'false'
+        env:
+          SEUIL: ${{ inputs.seuil || 'HIGH' }}
+        run: |
+          set -euo pipefail
+          mkdir -p rapports
+          ECHEC=0
+
+          while read -r CIBLE; do
+            NOM=$(echo "$CIBLE" | tr '/' '_')
+            RAPPORT="rapports/${NOM}.json"
+
+            echo "::group::Scan $CIBLE"
+            skillspector scan "$CIBLE" --no-llm --format json --output "$RAPPORT" || true
+            echo "::endgroup::"
+
+            if [ ! -s "$RAPPORT" ]; then
+              echo "::error::Scan échoué ou rapport vide pour $CIBLE — blocage (fail-closed)."
+              ECHEC=1
+              continue
+            fi
+
+            SCORE=$(jq -r '.risk_assessment.score // 100' "$RAPPORT")
+            SEV=$(jq -r '.risk_assessment.severity // "CRITICAL"' "$RAPPORT")
+            RECO=$(jq -r '.risk_assessment.recommendation // "DO_NOT_INSTALL"' "$RAPPORT")
+
+            echo "$CIBLE → score $SCORE · $SEV · $RECO"
+
+            case "$SEUIL" in
+              MEDIUM)   BLOQUANTS="MEDIUM HIGH CRITICAL" ;;
+              CRITICAL) BLOQUANTS="CRITICAL" ;;
+              *)        BLOQUANTS="HIGH CRITICAL" ;;
+            esac
+
+            if echo "$BLOQUANTS" | grep -qw "$SEV"; then
+              echo "::error::$CIBLE bloqué — sévérité $SEV (seuil $SEUIL), score $SCORE, reco $RECO."
+              jq -r '.issues[]? | "  [\(.severity)] \(.id) — \(.location.file):\(.location.start_line)"' "$RAPPORT"
+              ECHEC=1
+            fi
+          done < /tmp/cibles.txt
+
+          if [ "$ECHEC" -ne 0 ]; then
+            echo "::error::Scan obligatoire échoué. Merge interdit tant que les findings ne sont pas corrigés ou justifiés via baseline."
+            exit 1
+          fi
+          echo "Tous les skills passent le seuil $SEUIL."
+
+      - name: Publier les rapports
+        if: always() && steps.cibles.outputs.vide == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapports-skillspector
+          path: rapports/
+          retention-days: 30
