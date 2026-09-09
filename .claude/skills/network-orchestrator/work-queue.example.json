@@ -1,0 +1,96 @@
+{
+  "project": "my-network-operation",
+  "created_at": "2025-09-09T14:00:00Z",
+  "updated_at": "2025-09-09T14:00:00Z",
+  "cards": [
+    {
+      "id": "card-1",
+      "title": "Gather baseline metrics",
+      "owner": "metric-agent",
+      "state": "ready",
+      "priority": 5,
+      "acceptance_criteria": [
+        "Collect current performance baseline",
+        "Record all metrics in output",
+        "No errors during collection"
+      ],
+      "output": "",
+      "output_timestamp": null,
+      "blocks": ["card-3", "card-4"],
+      "blocked_by": []
+    },
+    {
+      "id": "card-2",
+      "title": "Validate configuration",
+      "owner": "config-validator",
+      "state": "ready",
+      "priority": 5,
+      "acceptance_criteria": [
+        "Run all linters and syntax checks",
+        "Confirm no deprecated directives",
+        "Validation score ≥ 0.90"
+      ],
+      "output": "",
+      "output_timestamp": null,
+      "blocks": ["card-3", "card-4"],
+      "blocked_by": []
+    },
+    {
+      "id": "card-3",
+      "title": "Dry-run test",
+      "owner": "test-agent",
+      "state": "backlog",
+      "priority": 4,
+      "acceptance_criteria": [
+        "Apply changes in test environment",
+        "Verify all acceptance criteria met",
+        "Compare against baseline (no regressions)"
+      ],
+      "output": "",
+      "output_timestamp": null,
+      "blocks": ["card-5"],
+      "blocked_by": ["card-1", "card-2"]
+    },
+    {
+      "id": "card-4",
+      "title": "Health check",
+      "owner": "health-agent",
+      "state": "backlog",
+      "priority": 4,
+      "acceptance_criteria": [
+        "Verify all services operational",
+        "Confirm no critical alerts",
+        "Log health status"
+      ],
+      "output": "",
+      "output_timestamp": null,
+      "blocks": ["card-5"],
+      "blocked_by": ["card-1", "card-2"]
+    },
+    {
+      "id": "card-5",
+      "title": "Production deployment",
+      "owner": "deploy-agent",
+      "state": "backlog",
+      "priority": 5,
+      "acceptance_criteria": [
+        "Deploy during approved change window",
+        "Monitor post-deployment for 5 minutes",
+        "Rollback plan ready",
+        "All metrics pass"
+      ],
+      "output": "",
+      "output_timestamp": null,
+      "blocks": [],
+      "blocked_by": ["card-3", "card-4"]
+    }
+  ],
+  "merge_gate": {
+    "tests_pass": false,
+    "no_dangerous_commands": true,
+    "config_validation_score": 0,
+    "change_window_approved": false,
+    "rollback_commands_ready": false,
+    "integrator_sign_off": false
+  }
+}
