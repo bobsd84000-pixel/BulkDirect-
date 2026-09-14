@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BULKDIRECT v9 — Démo Niche Validator + Suppliers</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(to bottom right, #0f172a via #1e3a5f20, #0f172a);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      border-bottom: 1px solid #1e40af30;
+      backdrop-filter: blur(10px);
+      background: #0f172a80;
+      padding: 16px;
+      margin-bottom: 32px;
+      border-radius: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .brand .icon {
+      width: 32px;
+      height: 32px;
+      background: #3b82f6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .intro {
+      color: #94a3b8;
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 960px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: linear-gradient(to bottom, #1e293b80, #0f172a80);
+      border: 1px solid #3b82f630;
+      border-radius: 12px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .panel h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .panel h2 .icon {
+      width: 20px;
+      height: 20px;
+      background: #3b82f6;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input, button {
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      background: #0f172a80;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      color: #fff;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: #1e293b;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px 20px;
+      background: linear-gradient(to right, #3b82f6, #2563eb);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      background: #1e40af20;
+      border: 1px #3b82f630;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #60a5fa;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .results {
+      margin-top: 24px;
+      padding: 20px;
+      background: #0f172a80;
+      border: 1px solid #475569;
+      border-radius: 8px;
+    }
+
+    .results h3 {
+      font-size: 14px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .result-item {
+      background: #1e293b;
+      padding: 14px;
+      border-left: 3px solid #3b82f6;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .result-item strong {
+      color: #60a5fa;
+    }
+
+    .supplier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .supplier-card {
+      background: linear-gradient(135deg, #1e40af15, #3b82f615);
+      border: 1px solid #3b82f640;
+      border-radius: 8px;
+      padding: 14px;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s, border-color 0.2s;
+      animation: slideUp 0.5s ease-out backwards;
+    }
+
+    .supplier-card:nth-child(1) { animation-delay: 0ms; }
+    .supplier-card:nth-child(2) { animation-delay: 50ms; }
+    .supplier-card:nth-child(3) { animation-delay: 100ms; }
+    .supplier-card:nth-child(4) { animation-delay: 150ms; }
+    .supplier-card:nth-child(5) { animation-delay: 200ms; }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .supplier-card:hover {
+      border-color: #60a5fa;
+      transform: translateY(-4px);
+    }
+
+    .supplier-name {
+      font-weight: 600;
+      color: #60a5fa;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .supplier-detail {
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .supplier-detail-label {
+      color: #94a3b8;
+    }
+
+    .supplier-detail-value {
+      color: #60a5fa;
+      font-weight: 500;
+    }
+
+    .loading {
+      color: #94a3b8;
+      font-size: 13px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .error {
+      color: #fca5a5;
+      background: #7f1d1d20;
+      border: 1px solid #dc26268f;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="icon">🎯</div>
+      <span>BULKDIRECT v9</span>
+    </div>
+  </header>
+
+  <main>
+    <p class="intro">Agent Scout Reddit — Validation de niche + réseau fournisseurs</p>
+
+    <div class="grid-2">
+      <!-- Control Panel -->
+      <div class="panel">
+        <h2>
+          <div class="icon">⚙️</div>
+          Niche Validator
+        </h2>
+
+        <div class="input-group">
+          <label>Niche Reddit</label>
+          <input type="text" id="niche" placeholder="ex: entrepreneur, ecommerce, business">
+        </div>
+
+        <div class="input-group">
+          <label>Catégorie produit (optionnel)</label>
+          <input type="text" id="category" placeholder="ex: electronics, textiles">
+        </div>
+
+        <button onclick="validateNiche()">⚡ Démarrer validation</button>
+
+        <div id="results" class="results" style="display: none;">
+          <h3>Résultats Scout</h3>
+          <div id="resultContent"></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="panel">
+        <h2>
+          <div class="icon">📊</div>
+          Métriques
+        </h2>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-value" id="leadsCount">0</div>
+            <div class="stat-label">Leads trouvés</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="confidenceCount">0</div>
+            <div class="stat-label">Haute confiance</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="savingsCount">0€</div>
+            <div class="stat-label">Économies</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suppliers Section -->
+    <div id="suppliersSection" style="display: none;">
+      <div class="panel">
+        <h2>
+          <div class="icon">🏭</div>
+          Réseau fournisseurs
+        </h2>
+        <div id="supplierContent"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Mock data
+    const mockResults = {
+      posts: [
+        {
+          author: 'supplier_hunt_2024',
+          category: 'demande_fournisseur',
+          confidence: 92,
+          painPoints: ['Retards de livraison ±2 semaines', 'Recherche 500+ unités/mois', 'Problèmes de qualité']
+        },
+        {
+          author: 'manufacturing_lead',
+          category: 'probleme_qualite',
+          confidence: 78,
+          painPoints: ['Respect SLA ±3 jours', 'Budget: 2K-5K€/commande', 'Changement de fournisseur']
+        }
+      ]
+    };
+
+    const mockSuppliers = [
+      { name: 'TechSource Asia', country: 'China', moq: '100 units', lead_days: 14, margin: 35, reliability_score: 92 },
+      { name: 'EuroManufacture GmbH', country: 'Germany', moq: '50 units', lead_days: 10, margin: 42, reliability_score: 98 },
+      { name: 'Global Trade Partners', country: 'India', moq: '200 units', lead_days: 21, margin: 28, reliability_score: 85 },
+      { name: 'Nordic Supply Co', country: 'Sweden', moq: '30 units', lead_days: 8, margin: 48, reliability_score: 96 },
+      { name: 'Pacific Traders Ltd', country: 'Vietnam', moq: '150 units', lead_days: 16, margin: 32, reliability_score: 88 }
+    ];
+
+    function getCachedSuppliers(cat) {
+      const cached = localStorage.getItem(`suppliers_${cat}`);
+      if (!cached) return null;
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp > 30 * 60 * 1000) return null;
+      return data;
+    }
+
+    function setCachedSuppliers(cat, data) {
+      localStorage.setItem(`suppliers_${cat}`, JSON.stringify({ data, timestamp: Date.now() }));
+    }
+
+    async function validateNiche() {
+      const niche = document.getElementById('niche').value.trim();
+      const category = document.getElementById('category').value.trim();
+
+      if (!niche) {
+        alert('Entrez une niche');
+        return;
+      }
+
+      // Show results
+      const resultsDiv = document.getElementById('results');
+      const resultContent = document.getElementById('resultContent');
+      resultContent.innerHTML = '<div class="loading">Validation en cours...</div>';
+      resultsDiv.style.display = 'block';
+
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Render results
+      resultContent.innerHTML = mockResults.posts.map(r => `
+        <div class="result-item">
+          <strong>${r.author}</strong> · ${r.category.replace(/_/g, ' ')} (${r.confidence}%)<br>
+          <small style="color: #94a3b8;">Pain points: ${r.painPoints.join(' · ')}</small>
+        </div>
+      `).join('');
+
+      // Update stats
+      document.getElementById('leadsCount').textContent = '2';
+      document.getElementById('confidenceCount').textContent = '1';
+      document.getElementById('savingsCount').textContent = '16€';
+
+      // Fetch suppliers if category
+      if (category) {
+        await loadSuppliers(category);
+      }
+    }
+
+    async function loadSuppliers(cat) {
+      const cached = getCachedSuppliers(cat);
+      if (cached) {
+        renderSuppliers(cached);
+        return;
+      }
+
+      const supplierContent = document.getElementById('supplierContent');
+      supplierContent.innerHTML = '<div class="loading">Chargement des fournisseurs...</div>';
+      document.getElementById('suppliersSection').style.display = 'block';
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 600));
+
+      setCachedSuppliers(cat, mockSuppliers);
+      renderSuppliers(mockSuppliers);
+    }
+
+    function renderSuppliers(suppliers) {
+      const supplierContent = document.getElementById('supplierContent');
+      document.getElementById('suppliersSection').style.display = 'block';
+
+      supplierContent.innerHTML = `
+        <div class="supplier-grid">
+          ${suppliers.map((s, i) => `
+            <div class="supplier-card">
+              <div class="supplier-name">${s.name}</div>
+              <div class="supplier-detail">
+                <span class="supplier-detail-label">Pays</span>
+                <span class="supplier-detail-value">${s.country}</span>
+              </div>
+              <div class="supplier-detail">
+                <span class="supplier-detail-label">MOQ</span>
+                <span class="supplier-detail-value">${s.moq}</span>
+              </div>
+              <div class="supplier-detail">
+                <span class="supplier-detail-label">Délai</span>
+                <span class="supplier-detail-value">${s.lead_days}j</span>
+              </div>
+              <div class="supplier-detail">
+                <span class="supplier-detail-label">Marge</span>
+                <span class="supplier-detail-value">${s.margin}%</span>
+              </div>
+              <div class="supplier-detail">
+                <span class="supplier-detail-label">Fiabilité</span>
+                <span class="supplier-detail-value">${'★'.repeat(Math.round(s.reliability_score / 20))}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Keyboard shortcut
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && document.activeElement.tagName === 'INPUT') {
+        validateNiche();
+      }
+    });
+  </script>
+</body>
+</html>
