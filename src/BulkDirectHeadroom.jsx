@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { Activity, Target, Zap, TrendingUp, CheckCircle } from 'lucide-react';
+import { Activity, Target, Zap, TrendingUp, CheckCircle, Users, Globe } from 'lucide-react';
 
 export default function BulkDirectLanding() {
+  const [niche, setNiche] = useState('');
+  const [category, setCategory] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [suppliers, setSuppliers] = useState([]);
+  const [loadingSuppliers, setLoadingSuppliers] = useState(false);
+  const [supplierError, setSupplierError] = useState('');
 
   const bulkDirectResults = [
     {
@@ -18,6 +23,53 @@ export default function BulkDirectLanding() {
       painPoints: ['Respect SLA ±3 jours', 'Budget: 2K-5K€/commande', 'Changement de fournisseur']
     }
   ];
+
+  const getCachedSuppliers = (cat) => {
+    const cached = localStorage.getItem(`suppliers_${cat}`);
+    if (!cached) return null;
+    const { data, timestamp } = JSON.parse(cached);
+    if (Date.now() - timestamp > 30 * 60 * 1000) return null; // 30 min expiry
+    return data;
+  };
+
+  const setCachedSuppliers = (cat, data) => {
+    localStorage.setItem(`suppliers_${cat}`, JSON.stringify({ data, timestamp: Date.now() }));
+  };
+
+  const fetchSuppliers = async (cat) => {
+    const cached = getCachedSuppliers(cat);
+    if (cached) {
+      setSuppliers(cached);
+      return;
+    }
+
+    setLoadingSuppliers(true);
+    setSupplierError('');
+    try {
+      const res = await fetch(`/api/suppliers?category=${encodeURIComponent(cat)}&limit=10`);
+      const data = await res.json();
+
+      if (!Array.isArray(data) || data.length === 0) {
+        setSupplierError(`Aucun fournisseur trouvé pour "${cat}". Essayez une autre catégorie.`);
+        setSuppliers([]);
+      } else {
+        setCachedSuppliers(cat, data);
+        setSuppliers(data);
+      }
+    } catch (err) {
+      setSupplierError('Erreur lors du chargement des fournisseurs');
+      console.error(err);
+    } finally {
+      setLoadingSuppliers(false);
+    }
+  };
+
+  const handleStartScout = async () => {
+    setShowResults(!showResults);
+    if (!showResults && category) {
+      await fetchSuppliers(category);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-900/20 to-slate-950 text-white">
@@ -50,26 +102,45 @@ export default function BulkDirectLanding() {
                 <h2 className="text-xl font-semibold">Contrôle Agent Scout</h2>
               </div>
 
-              <div className="mb-6">
-                <label className="text-sm text-slate-300 block mb-3 font-medium">Posts en attente (2)</label>
-                <div className="space-y-2">
-                  <div className="bg-slate-700/30 p-4 rounded-lg border border-slate-600/50 hover:border-blue-500/30 transition">
-                    <p className="text-sm font-semibold text-blue-300">Cherche fournisseur fiable pour commandes en masse</p>
-                    <p className="text-xs text-slate-400 mt-1">par supplier_hunt_2024 dans r/business</p>
-                  </div>
-                  <div className="bg-slate-700/30 p-4 rounded-lg border border-slate-600/50 hover:border-blue-500/30 transition">
-                    <p className="text-sm font-semibold text-blue-300">Problème qualité avec fournisseur actuel</p>
-                    <p className="text-xs text-slate-400 mt-1">par manufacturing_lead dans r/manufacturing</p>
+              <div className="mb-6 space-y-4">
+                <div>
+                  <label className="text-sm text-slate-300 block mb-2 font-medium">Niche Reddit</label>
+                  <input
+                    type="text"
+                    value={niche}
+                    onChange={(e) => setNiche(e.target.value)}
+                    placeholder="ex: entrepreneur, business, ecommerce"
+                    className="w-full bg-slate-700/30 border border-slate-600/50 text-white px-4 py-2.5 rounded-lg focus:outline-none focus:border-blue-500/50 transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm text-slate-300 block mb-2 font-medium">Catégorie produit (optionnel)</label>
+                  <input
+                    type="text"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="ex: electronics, textiles, machinery"
+                    className="w-full bg-slate-700/30 border border-slate-600/50 text-white px-4 py-2.5 rounded-lg focus:outline-none focus:border-blue-500/50 transition"
+                  />
+                </div>
+
+                <div className="bg-slate-700/30 p-4 rounded-lg border border-slate-600/50">
+                  <p className="text-sm font-semibold text-blue-300 mb-2">Posts en attente (2)</p>
+                  <div className="space-y-2 text-sm">
+                    <div className="text-slate-300">• Cherche fournisseur fiable pour commandes en masse</div>
+                    <div className="text-slate-300">• Problème qualité avec fournisseur actuel</div>
                   </div>
                 </div>
               </div>
 
               <button
-                onClick={() => setShowResults(!showResults)}
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition transform hover:scale-105 flex items-center justify-center gap-2"
+                onClick={handleStartScout}
+                disabled={loadingSuppliers}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition transform hover:scale-105 flex items-center justify-center gap-2"
               >
                 <Zap className="w-4 h-4" />
-                {showResults ? 'Masquer résultats' : 'Démarrer cycle Scout'}
+                {loadingSuppliers ? 'Chargement...' : showResults ? 'Masquer résultats' : 'Démarrer cycle Scout'}
               </button>
 
               <p className="text-xs text-slate-400 mt-4 text-center bg-blue-500/10 px-3 py-2 rounded border border-blue-500/20">
@@ -140,6 +211,81 @@ export default function BulkDirectLanding() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Suppliers Grid */}
+        {showResults && category && (
+          <div className="mb-8">
+            {supplierError && (
+              <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-6 mb-4 text-red-300">
+                {supplierError}
+              </div>
+            )}
+
+            {suppliers.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-400" />
+                  Fournisseurs - {category}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {suppliers.map((s, i) => (
+                    <div
+                      key={i}
+                      className="bg-gradient-to-br from-slate-800/80 to-slate-800/40 backdrop-blur-md border border-blue-500/20 rounded-xl p-6 hover:border-blue-400/50 transition transform hover:scale-105 shadow-lg"
+                      style={{
+                        animation: `slideUp 0.5s ease-out ${i * 50}ms both`
+                      }}
+                    >
+                      <div className="mb-4">
+                        <p className="font-bold text-blue-300 text-base">{s.name}</p>
+                        <div className="flex items-center gap-1 mt-1 text-xs text-slate-400">
+                          <Globe className="w-3 h-3" />
+                          {s.country}
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 text-sm bg-slate-800/40 p-3 rounded-lg border border-slate-700/50">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-400 uppercase">MOQ</p>
+                          <p className="text-blue-300 font-semibold">{s.moq || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-400 uppercase">Délai</p>
+                          <p className="text-green-300">{s.lead_days || '—'} jours</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-400 uppercase">Marge</p>
+                          <p className="text-amber-300">{s.margin ? `${s.margin}%` : '—'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-slate-400 uppercase">Fiabilité</p>
+                          <div className="flex gap-1">
+                            {[...Array(5)].map((_, j) => (
+                              <span
+                                key={j}
+                                className={j < Math.round((s.reliability_score || 0) / 20) ? 'text-yellow-400' : 'text-slate-600'}
+                              >
+                                ★
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <button className="w-full mt-4 bg-blue-500/20 hover:bg-blue-500/40 border border-blue-400/50 text-blue-300 py-2 rounded-lg transition text-sm font-medium">
+                        Contacter
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {loadingSuppliers && (
+              <div className="text-center py-8 text-slate-400">Chargement des fournisseurs...</div>
+            )}
           </div>
         )}
 
