@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Relance — Ne perdez plus jamais un prospect</title>
+<meta name="description" content="Relance est l'outil de suivi de prospects qui vous rappelle qui contacter, quand, et pourquoi. Simple, rapide, efficace.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1E3A5F;
+    --navy-dark: #14283F;
+    --green: #047857;
+    --green-dark: #035C43;
+    --bg: #FFFFFF;
+    --bg-alt: #F5F7FA;
+    --text: #14283F;
+    --text-muted: #5B6B7D;
+    --border: #E2E8F0;
+    --card-bg: #FFFFFF;
+    --shadow: 0 1px 3px rgba(20, 40, 63, 0.08), 0 1px 2px rgba(20, 40, 63, 0.06);
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0F1B2B;
+    --bg-alt: #16263B;
+    --text: #E8EEF5;
+    --text-muted: #9AACC0;
+    --border: #253A52;
+    --card-bg: #16263B;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.24);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1B2B;
+      --bg-alt: #16263B;
+      --text: #E8EEF5;
+      --text-muted: #9AACC0;
+      --border: #253A52;
+      --card-bg: #16263B;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.24);
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Figtree', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+
+  .logo {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--navy);
+  }
+
+  :root[data-theme="dark"] .logo { color: #EDF2F7; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .logo { color: #EDF2F7; }
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: var(--green);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--green-dark); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-lg {
+    padding: 16px 32px;
+    font-size: 16px;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 96px 0 80px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--green);
+    background: rgba(4, 120, 87, 0.1);
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: clamp(32px, 5.5vw, 56px);
+    line-height: 1.1;
+    max-width: 760px;
+    margin: 0 auto 24px;
+  }
+
+  .hero p {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--text-muted);
+    max-width: 560px;
+    margin: 0 auto 40px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-note {
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat { text-align: center; }
+
+  .stat-num {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 800;
+    font-size: clamp(28px, 4vw, 40px);
+    color: var(--navy);
+  }
+
+  :root[data-theme="dark"] .stat-num { color: #7EA6D8; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .stat-num { color: #7EA6D8; }
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Features */
+  .section {
+    padding: 88px 0;
+  }
+
+  .section-head {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 56px;
+  }
+
+  .section-head h2 {
+    font-size: clamp(26px, 4vw, 36px);
+    margin-bottom: 16px;
+  }
+
+  .section-head p {
+    color: var(--text-muted);
+    font-size: 17px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(30, 58, 95, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .card p {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  /* How it works */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  .step-num {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  .step h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .step p {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  .bg-alt { background: var(--bg-alt); }
+
+  /* CTA */
+  .cta {
+    background: var(--navy);
+    border-radius: 24px;
+    padding: 64px 40px;
+    text-align: center;
+    margin: 0 24px;
+  }
+
+  :root[data-theme="dark"] .cta { background: var(--navy-dark); }
+
+  .cta h2 {
+    color: #fff;
+    font-size: clamp(24px, 4vw, 34px);
+    margin-bottom: 16px;
+  }
+
+  .cta p {
+    color: #C9D6E8;
+    max-width: 480px;
+    margin: 0 auto 32px;
+  }
+
+  .cta .btn-primary {
+    box-shadow: 0 4px 14px rgba(4, 120, 87, 0.4);
+  }
+
+  /* Footer */
+  footer {
+    padding: 40px 0 calc(40px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    .grid-3, .steps, .stats { grid-template-columns: 1fr; }
+    .hero { padding: 56px 0 48px; }
+    .section { padding: 56px 0; }
+    .cta { margin: 0 16px; padding: 48px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <div class="logo">Relance</div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème">🌙</button>
+      <a href="#cta" class="btn btn-primary">Essai gratuit</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow">Suivi de prospects</span>
+      <h1>Ne perdez plus jamais un prospect dans la nature</h1>
+      <p>Relance vous dit qui contacter, quand, et pourquoi. Fini les tableurs oubliés et les opportunités qui s'éteignent faute de suivi.</p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn btn-primary btn-lg">Démarrer gratuitement</a>
+        <a href="#features" class="btn btn-ghost btn-lg">Voir comment ça marche</a>
+      </div>
+      <p class="hero-note">Sans carte bancaire · Configuration en 2 minutes</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">3x</div>
+        <div class="stat-label">Plus de relances effectuées</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Prospect oublié</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2 min</div>
+        <div class="stat-label">Pour démarrer</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-head">
+        <h2>Tout ce qu'il faut, rien de superflu</h2>
+        <p>Trois fonctions essentielles pour ne plus jamais laisser un prospect sans réponse.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-icon">⏰</div>
+          <h3>Rappels automatiques</h3>
+          <p>Relance calcule le bon moment pour recontacter chaque prospect et vous le rappelle, sans effort de votre part.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <h3>Historique clair</h3>
+          <p>Chaque échange, chaque note, chaque étape au même endroit. Plus besoin de fouiller vos emails.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📈</div>
+          <h3>Priorisation intelligente</h3>
+          <p>Les prospects les plus chauds remontent en premier. Vous savez toujours qui appeler maintenant.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-alt">
+    <div class="container">
+      <div class="section-head">
+        <h2>Comment ça marche</h2>
+        <p>Trois étapes, aucune friction.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Ajoutez vos prospects</h3>
+          <p>Import en un clic ou ajout manuel. Relance s'adapte à votre façon de travailler.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Laissez Relance planifier</h3>
+          <p>L'outil détermine automatiquement quand chaque contact doit être relancé.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Suivez vos rappels</h3>
+          <p>Une liste claire chaque jour. Vous cochez, vous avancez.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="cta">
+    <div class="container">
+      <div class="cta">
+        <h2>Prêt à ne plus rien laisser filer ?</h2>
+        <p>Rejoignez les équipes commerciales qui ont repris le contrôle de leur suivi de prospects.</p>
+        <a href="#" class="btn btn-primary btn-lg">Commencer gratuitement</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    &copy; 2026 Relance. Tous droits réservés.
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById('themeToggle');
+    var stored = null;
+    try { stored = localStorage.getItem('relance-theme'); } catch (e) {}
+
+    function systemPrefersDark() {
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    function applyTheme(theme) {
+      if (theme === 'dark' || theme === 'light') {
+        root.setAttribute('data-theme', theme);
+        toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      } else {
+        root.removeAttribute('data-theme');
+        toggle.textContent = systemPrefersDark() ? '☀️' : '🌙';
+      }
+    }
+
+    applyTheme(stored);
+
+    toggle.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme') || (systemPrefersDark() ? 'dark' : 'light');
+      var next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      try { localStorage.setItem('relance-theme', next); } catch (e) {}
+    });
+  })();
+</script>
+
+</body>
+</html>
