@@ -1,4 +1,10 @@
-# Ces deux routes dépendent de `playwright`, non déclaré dans package.json
-# et trop volumineux pour une fonction serverless Vercel.
+# Le plan Hobby de Vercel limite un deploiement a 12 Serverless Functions.
+# Le dossier api/ en contient 15 : on en exclut 3 pour revenir a 12.
+#
+# reddit-scout.js et analyze-v3.js dependent en plus de `playwright`,
+# qui n'est declare ni dans dependencies ni dans devDependencies.
 api/reddit-scout.js
 api/analyze-v3.js
+#
+# proxy.js n'est appele nulle part dans src/.
+api/proxy.js
