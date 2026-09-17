@@ -1,0 +1,4 @@
+# Ces deux routes dépendent de `playwright`, non déclaré dans package.json
+# et trop volumineux pour une fonction serverless Vercel.
+api/reddit-scout.js
+api/analyze-v3.js
