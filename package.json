@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "type": "module",
   "bin": {
-    "bulkdirect": "./bin/bulkdirect-cli.js"
+    "codex": "./bin/codex.js"
   },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src --ext js,jsx",
-    "bulkdirect:doctor": "node bin/bulkdirect-cli.js doctor",
-    "bulkdirect:help": "node bin/bulkdirect-cli.js --help"
+    "codex:doctor": "node bin/codex.js doctor",
+    "codex:help": "node bin/codex.js --help"
   },
   "dependencies": {
     "react": "^18.3.1",

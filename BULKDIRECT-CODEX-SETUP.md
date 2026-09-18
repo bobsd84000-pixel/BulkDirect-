@@ -1,10 +1,10 @@
-# BulkDirect Codex Integration Setup
+# Codex CLI — General-Purpose Diagnostics
 
-Guide complet d'installation et d'intégration Codex Claude review pour BulkDirect.
+Guide complet d'installation et d'utilisation du CLI Codex généraliste.
 
 ## 📋 Overview
 
-BulkDirect inclut un CLI intégré (`bulkdirect`) qui expose des outils de diagnostic et d'intégration Codex Claude.
+Codex est un CLI généraliste (`codex`) qui expose des outils de diagnostic et de vérification d'environnement pour tout projet.
 
 **Statut:** ✅ Ready to use
 **Branche:** `claude/codex-claude-review-setup-nih98l`
@@ -28,10 +28,10 @@ Le `bin` et `scripts` sont définis dans `package.json`:
 ```json
 {
   "bin": {
-    "bulkdirect": "./bin/bulkdirect-cli.js"
+    "codex": "./bin/codex.js"
   },
   "scripts": {
-    "bulkdirect:doctor": "node bin/bulkdirect-cli.js doctor"
+    "codex:doctor": "node bin/codex.js doctor"
   }
 }
 ```
@@ -42,7 +42,7 @@ Merge le contenu de `package-bin-snippet.json` dans votre `package.json`.
 
 ## 📖 Commandes
 
-### `bulkdirect doctor`
+### `codex doctor`
 
 Exécute diagnostics complets de l'environnement.
 
@@ -50,43 +50,43 @@ Exécute diagnostics complets de l'environnement.
 - ✅ Node.js version
 - ✅ npm installed
 - ✅ Git installed
-- ✅ Config directory (~/.bulkdirect)
-- ✅ BulkDirect repo initialized
+- ✅ Config directory (~/.codex)
+- ✅ Git repository initialized
 
 **Usage:**
 ```bash
-bulkdirect doctor
+codex doctor
 # ou
-npm run bulkdirect:doctor
+npm run codex:doctor
 ```
 
 **Exemple de sortie:**
 ```
-🏥 BulkDirect diagnostics
+🔍 Codex diagnostics
 
 ✅ Node.js version: v22.22.2
 ✅ npm installed: 10.9.7
 ✅ Git installed: git version 2.43.0
-✅ Config directory: /home/user/.bulkdirect
-✅ BulkDirect repo initialized: Git repo detected
+✅ Config directory: /home/user/.codex
+✅ Git repository: Git repo detected
 
 ==================================================
 ✅ All diagnostics passed
 ```
 
-### `bulkdirect --help`
+### `codex --help`
 
 Affiche l'aide et usage disponible.
 
 ```bash
-bulkdirect --help
+codex --help
 # ou
-bulkdirect -h
+codex -h
 ```
 
 ---
 
-## 🔧 Intégration Codex
+## 🔧 Utilisation
 
 ### Étape 1: Cloner/Pull la branche
 
@@ -105,14 +105,14 @@ npm install
 
 ```bash
 npm link
-bulkdirect doctor
+codex doctor
 ```
 
 Tous les checks doivent être ✅.
 
 ### Étape 4: Configuration
 
-Configuration sauvegardée à: `~/.bulkdirect/config.json`
+Configuration sauvegardée à: `~/.codex/config.json`
 
 Crée automatiquement à première utilisation.
 
@@ -121,18 +121,12 @@ Crée automatiquement à première utilisation.
 ## 📁 Structure
 
 ```
-BulkDirect/
+Project/
 ├── bin/
-│   └── bulkdirect-cli.js        # CLI principal
-├── package.json                  # bin + scripts définis
-├── package-bin-snippet.json      # Snippet à merger
-├── CODEX-SETUP.md               # Guide Codex plugin
-├── BULKDIRECT-CODEX-SETUP.md   # Ce fichier
-└── packages/
-    └── codex-plugin-cc/         # Package npm global (optionnel)
-        ├── bin/
-        ├── package.json
-        └── README.md
+│   └── codex.js                # CLI principal
+├── package.json                # bin + scripts définis
+├── package-bin-snippet.json    # Snippet à merger
+└── BULKDIRECT-CODEX-SETUP.md   # Ce fichier
 ```
 
 ---
@@ -143,31 +137,27 @@ BulkDirect/
 
 ```bash
 # Setup
-git checkout claude/codex-claude-review-setup-nih98l
 npm install
 npm link
 
 # Utiliser
-bulkdirect doctor
-npm run bulkdirect:doctor
+codex doctor
+npm run codex:doctor
 
 # Modifier CLI
-# ... edit bin/bulkdirect-cli.js
-bulkdirect doctor  # changements appliqués immédiatement
+# ... edit bin/codex.js
+codex doctor  # changements appliqués immédiatement
 ```
 
 ### Production / CI-CD
 
 ```bash
-# Merge vers main
-git merge claude/codex-claude-review-setup-nih98l
-
 # Install + link
 npm install
 npm link
 
 # Vérifier avant déploiement
-npm run bulkdirect:doctor
+npm run codex:doctor
 ```
 
 ### Troubleshooting
@@ -175,13 +165,13 @@ npm run bulkdirect:doctor
 **CLI non trouvée globalement:**
 ```bash
 npm link
-which bulkdirect  # devrait afficher le path
+which codex  # devrait afficher le path
 ```
 
 **Config directory manquante:**
 ```bash
-mkdir -p ~/.bulkdirect
-npm run bulkdirect:doctor
+mkdir -p ~/.codex
+npm run codex:doctor
 ```
 
 **Node version incompatible:**

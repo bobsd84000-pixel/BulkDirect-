@@ -10,25 +10,19 @@ const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CONFIG_DIR = path.join(process.env.HOME || process.env.USERPROFILE, '.bulkdirect');
+const CONFIG_DIR = path.join(process.env.HOME || process.env.USERPROFILE, '.codex');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
-
-async function ensureConfigDir() {
-  if (!fs.existsSync(CONFIG_DIR)) {
-    fs.mkdirSync(CONFIG_DIR, { recursive: true });
-  }
-}
 
 async function doctor() {
   try {
-    console.log('\n🏥 BulkDirect diagnostics\n');
+    console.log('\n🔍 Codex diagnostics\n');
 
     const checks = {
       'Node.js version': await checkNode(),
       'npm installed': await checkNpm(),
       'Git installed': await checkGit(),
       'Config directory': checkConfigDir(),
-      'BulkDirect initialized': await checkRepo()
+      'Git repository': await checkRepo()
     };
 
     let allPass = true;
@@ -98,16 +92,16 @@ async function main() {
 
   if (!command || command === '--help' || command === '-h') {
     console.log(`
-BulkDirect CLI - Agent Scout Reddit lead generation
+Codex — General-purpose diagnostics CLI
 
 Usage:
-  bulkdirect doctor     Run diagnostics and environment checks
-  bulkdirect --help     Show this help
-  bulkdirect -h         Short help
+  codex doctor      Run environment diagnostics
+  codex --help      Show this help
+  codex -h          Short help
 
 Examples:
-  bulkdirect doctor
-  npm run bulkdirect:doctor
+  codex doctor
+  npm run codex:doctor
 
     `);
     process.exit(0);
@@ -117,7 +111,7 @@ Examples:
     await doctor();
   } else {
     console.error(`❌ Unknown command: ${command}`);
-    console.error('Run "bulkdirect --help" for usage');
+    console.error('Run "codex --help" for usage');
     process.exit(1);
   }
 }
