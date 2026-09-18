@@ -66,8 +66,20 @@ function render(){
   list.forEach(function(d,i){
     var el=document.createElement('div'); el.className='card';
     el.style.setProperty('--i', i);
-    var img='<img class="card-img" src="data:image/jpeg;base64,'+d.b64+'" alt="'+d.titre+'" loading="lazy" onerror="console.error(\'IMG FAIL:\',d.id)">';
-    el.innerHTML=img+'<div class="card-body"><h3>'+d.titre+'</h3><p>'+d.desc+'</p><div class="bar"><i style="width:'+d.conf+'%"></i></div><div class="row"><span>'+d.id+'</span><span>'+d.conf+'%</span></div><span class="tag">'+d.classe+'</span><div class="meta"><span>'+d.coords+'</span><span>'+d.date+'</span><span>NDVI:'+d.ndvi.toFixed(2)+'</span></div></div>';
+    var img=document.createElement('img'); img.className='card-img'; img.src='data:image/jpeg;base64,'+d.b64; img.alt=d.titre; img.loading='lazy'; img.onerror=function(){console.error('IMG FAIL:',d.id)};
+    el.appendChild(img);
+    var body=document.createElement('div'); body.className='card-body';
+    var h3=document.createElement('h3'); h3.textContent=d.titre; body.appendChild(h3);
+    var p=document.createElement('p'); p.textContent=d.desc; body.appendChild(p);
+    var bar=document.createElement('div'); bar.className='bar'; var i_el=document.createElement('i'); i_el.style.width=d.conf+'%'; bar.appendChild(i_el); body.appendChild(bar);
+    var row=document.createElement('div'); row.className='row'; row.innerHTML='<span>'+d.id+'</span><span>'+d.conf+'%</span>'; body.appendChild(row);
+    var tag=document.createElement('span'); tag.className='tag'; tag.textContent=d.classe; body.appendChild(tag);
+    var meta=document.createElement('div'); meta.className='meta';
+    var s1=document.createElement('span'); s1.textContent=d.coords; meta.appendChild(s1);
+    var s2=document.createElement('span'); s2.textContent=d.date; meta.appendChild(s2);
+    var s3=document.createElement('span'); s3.textContent='NDVI:'+(d.ndvi?d.ndvi.toFixed(2):'N/A'); meta.appendChild(s3);
+    body.appendChild(meta);
+    el.appendChild(body);
     g.appendChild(el);
   });
   document.getElementById('n').textContent=list.length;
