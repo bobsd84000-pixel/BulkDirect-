@@ -72,12 +72,15 @@ function render(){
     var h3=document.createElement('h3'); h3.textContent=d.titre; body.appendChild(h3);
     var p=document.createElement('p'); p.textContent=d.desc; body.appendChild(p);
     var bar=document.createElement('div'); bar.className='bar'; var i_el=document.createElement('i'); i_el.style.width=d.conf+'%'; bar.appendChild(i_el); body.appendChild(bar);
-    var row=document.createElement('div'); row.className='row'; row.innerHTML='<span>'+d.id+'</span><span>'+d.conf+'%</span>'; body.appendChild(row);
+    var row=document.createElement('div'); row.className='row';
+    var r1=document.createElement('span'); r1.textContent=d.id; row.appendChild(r1);
+    var r2=document.createElement('span'); r2.textContent=d.conf+'%'; row.appendChild(r2);
+    body.appendChild(row);
     var tag=document.createElement('span'); tag.className='tag'; tag.textContent=d.classe; body.appendChild(tag);
     var meta=document.createElement('div'); meta.className='meta';
     var s1=document.createElement('span'); s1.textContent=d.coords; meta.appendChild(s1);
     var s2=document.createElement('span'); s2.textContent=d.date; meta.appendChild(s2);
-    var s3=document.createElement('span'); s3.textContent='NDVI:'+(d.ndvi?d.ndvi.toFixed(2):'N/A'); meta.appendChild(s3);
+    var s3=document.createElement('span'); s3.textContent='NDVI:'+(typeof d.ndvi==='number'?d.ndvi.toFixed(2):'N/A'); meta.appendChild(s3);
     body.appendChild(meta);
     el.appendChild(body);
     g.appendChild(el);
