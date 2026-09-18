@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Canvas Test</title>
+<style>body{background:#222;color:#fff;padding:20px;font-family:sans-serif}.test{margin:20px 0;border:1px solid #444;padding:20px}canvas{border:1px solid #4ade80;margin:10px 0}</style>
+</head>
+<body>
+<h1>Canvas Test</h1>
+
+<div class="test">
+  <h2>Test 1: Simple Rectangle</h2>
+  <canvas id="c1" width="200" height="200"></canvas>
+  <p id="s1"></p>
+</div>
+
+<div class="test">
+  <h2>Test 2: Image Data</h2>
+  <canvas id="c2" width="200" height="200"></canvas>
+  <p id="s2"></p>
+</div>
+
+<div class="test">
+  <h2>Test 3: Perlin Noise</h2>
+  <canvas id="c3" width="200" height="200"></canvas>
+  <p id="s3"></p>
+</div>
+
+<script>
+try {
+  // Test 1: Simple rectangle
+  var c1 = document.getElementById('c1');
+  var ctx1 = c1.getContext('2d');
+  ctx1.fillStyle = '#4ade80';
+  ctx1.fillRect(50, 50, 100, 100);
+  document.getElementById('s1').textContent = '✓ Rectangle drawn';
+} catch(e) {
+  document.getElementById('s1').textContent = '✗ Error: ' + e.message;
+}
+
+try {
+  // Test 2: Image data
+  var c2 = document.getElementById('c2');
+  var ctx2 = c2.getContext('2d');
+  var img = ctx2.createImageData(200, 200);
+  for(var i=0; i<img.data.length; i+=4) {
+    img.data[i] = Math.random()*255;
+    img.data[i+1] = Math.random()*255;
+    img.data[i+2] = Math.random()*255;
+    img.data[i+3] = 255;
+  }
+  ctx2.putImageData(img, 0, 0);
+  document.getElementById('s2').textContent = '✓ Image data rendered';
+} catch(e) {
+  document.getElementById('s2').textContent = '✗ Error: ' + e.message;
+}
+
+try {
+  // Test 3: Perlin noise
+  function noise(w,h,scale){
+    const out=new Float32Array(w*h);
+    for(let i=0;i<w*h;i++)out[i]=Math.random();
+    return out;
+  }
+  var c3 = document.getElementById('c3');
+  var ctx3 = c3.getContext('2d');
+  var n = noise(200, 200, 32);
+  var img3 = ctx3.createImageData(200, 200);
+  for(var i=0; i<200*200; i++) {
+    var v = Math.floor(n[i]*255);
+    img3.data[i*4] = v;
+    img3.data[i*4+1] = v;
+    img3.data[i*4+2] = v;
+    img3.data[i*4+3] = 255;
+  }
+  ctx3.putImageData(img3, 0, 0);
+  document.getElementById('s3').textContent = '✓ Noise rendered';
+} catch(e) {
+  document.getElementById('s3').textContent = '✗ Error: ' + e.message;
+}
+</script>
+</body>
+</html>
