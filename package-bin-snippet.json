@@ -1,0 +1,9 @@
+{
+  "bin": {
+    "bulkdirect": "./bin/bulkdirect-cli.js"
+  },
+  "scripts": {
+    "bulkdirect:doctor": "node bin/bulkdirect-cli.js doctor",
+    "bulkdirect:help": "node bin/bulkdirect-cli.js --help"
+  }
+}
