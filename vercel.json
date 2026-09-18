@@ -2,15 +2,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "env": [
-    "REDDIT_CLIENT_ID",
-    "REDDIT_CLIENT_SECRET",
-    "REDDIT_USER_AGENT",
-    "ANTHROPIC_API_KEY",
-    "OPENROUTER_API_KEY",
-    "TOGETHER_API_KEY",
-    "WEBHOOK_URL"
-  ],
   "routes": [
     {
       "src": "/api/(.*)",
