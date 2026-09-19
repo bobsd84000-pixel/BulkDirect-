@@ -15,33 +15,38 @@ const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 
 async function doctor() {
   try {
-    console.log('\n🔍 Codex diagnostics\n');
-
     const checks = {
-      'Node.js version': await checkNode(),
-      'npm installed': await checkNpm(),
-      'Git installed': await checkGit(),
+      'Node.js': await checkNode(),
+      'npm': await checkNpm(),
+      'Git': await checkGit(),
       'Config directory': checkConfigDir(),
       'Git repository': await checkRepo()
     };
 
+    const results = {};
     let allPass = true;
+
     Object.entries(checks).forEach(([check, result]) => {
-      const icon = result.pass ? '✅' : '⚠️';
-      console.log(`${icon} ${check}: ${result.message}`);
+      results[check] = {
+        status: result.pass ? 'ok' : 'warning',
+        message: result.message
+      };
       if (!result.pass) allPass = false;
     });
 
-    console.log('\n' + '='.repeat(50));
-    if (allPass) {
-      console.log('✅ All diagnostics passed');
-      process.exit(0);
-    } else {
-      console.log('⚠️  Some checks need attention');
-      process.exit(0);
-    }
+    console.log(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      status: allPass ? 'ok' : 'warning',
+      checks: results
+    }, null, 2));
+
+    process.exit(allPass ? 0 : 1);
   } catch (error) {
-    console.error('❌ Diagnostic failed:', error.message);
+    console.error(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      status: 'error',
+      error: error.message
+    }, null, 2));
     process.exit(1);
   }
 }
