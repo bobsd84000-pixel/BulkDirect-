@@ -1,12 +1,126 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BulkDirect - Agent Scout</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/index.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TerraClass - Sentinel-2 Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{background:linear-gradient(135deg,#070c18 0%,#0d1526 100%);color:#e2e8f0;overflow-x:hidden}
+.container{max-width:1200px;margin:0 auto;padding:2rem 1rem}
+header{text-align:center;padding:4rem 1rem 2rem}
+.logo{font-size:3rem;font-weight:700;margin-bottom:1rem}
+.logo span{color:#4ade80;display:block;font-size:1.5rem;font-weight:400;margin-top:.5rem}
+.tagline{font-size:1.25rem;color:#94a3b8;margin-bottom:3rem;max-width:600px;margin-left:auto;margin-right:auto}
+.cta{display:inline-block;background:#4ade80;color:#070c18;padding:1rem 2rem;border-radius:99px;font-weight:600;text-decoration:none;transition:all .3s ease;border:2px solid #4ade80;cursor:pointer;font-size:1rem;font-family:inherit}
+.cta:hover{background:#22c55e;border-color:#22c55e;transform:translateY(-2px)}
+.cta-secondary{background:transparent;border:2px solid #4ade80;color:#4ade80;margin-left:1rem}
+.cta-secondary:hover{background:#4ade80;color:#070c18}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin:4rem 0}
+.feature{background:#0d1526;border:1px solid #1e293b;border-radius:12px;padding:2rem;transition:all .3s ease}
+.feature:hover{border-color:#4ade80;box-shadow:0 8px 24px rgba(74,222,128,.15)}
+.feature h3{font-size:1.25rem;color:#4ade80;margin-bottom:1rem}
+.feature p{color:#94a3b8;line-height:1.6}
+.classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin:3rem 0}
+.class-card{background:#1a2332;border-left:4px solid #4ade80;padding:1.5rem;border-radius:8px}
+.class-card h4{color:#e2e8f0;margin-bottom:.5rem}
+.class-card p{font-size:.9rem;color:#94a3b8}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;margin:3rem 0}
+.stat{background:#0d1526;border:1px solid #1e293b;border-radius:12px;padding:2rem;text-align:center}
+.stat-number{font-size:2.5rem;color:#4ade80;font-weight:700;display:block;margin-bottom:.5rem}
+.stat-label{color:#94a3b8;font-size:.9rem;text-transform:uppercase;letter-spacing:.1em}
+footer{text-align:center;padding:2rem 1rem;border-top:1px solid #1e293b;margin-top:3rem;color:#475569;font-size:.85rem}
+h2{font-size:2rem;color:#e2e8f0;margin-bottom:2rem;text-align:center}
+@media(max-width:768px){header{padding:2rem 1rem 1rem}.logo{font-size:2rem}h2{font-size:1.5rem}.cta-secondary{display:block;margin:1rem 0 0 0}}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">Terra<span>Class</span></div>
+    <p class="tagline">Visualisation interactive de l'imagerie satellite Sentinel-2</p>
+    <div>
+      <a href="https://claude.ai/artifact/6iY4Fu63CXXNSHXLPoz2T5" class="cta">Accéder au Dashboard</a>
+      <a href="https://github.com/bobsd84000-pixel/BulkDirect-" class="cta cta-secondary">GitHub Repo</a>
+    </div>
+  </header>
+
+  <h2>À propos</h2>
+  <p style="text-align:center;color:#94a3b8;margin-bottom:2rem;max-width:800px;margin-left:auto;margin-right:auto">
+    TerraClass explore 12 sites satellites Sentinel-2 répartis en 5 classes de couverture terrestre. Analyse interactive avec filtrage, statistiques temps réel et indices de végétation.
+  </p>
+
+  <div class="features">
+    <div class="feature">
+      <h3>🛰️ Sentinel-2 L2A</h3>
+      <p>Images haute résolution de l'ESA couvrant 6 continents</p>
+    </div>
+    <div class="feature">
+      <h3>📊 5 Classes</h3>
+      <p>Forêt • Eau • Urbain • Agriculture • Industriel</p>
+    </div>
+    <div class="feature">
+      <h3>🎯 Filtrage temps réel</h3>
+      <p>Stats de confiance et NDVI instantanés</p>
+    </div>
+    <div class="feature">
+      <h3>📱 Mobile-optimisé</h3>
+      <p>Canvas HTML5 + JavaScript vanilla</p>
+    </div>
+  </div>
+
+  <h2>Classes de couverture terrestre</h2>
+  <div class="classes">
+    <div class="class-card">
+      <h4>🌲 Forêt</h4>
+      <p>NDVI 0.7-0.85 • Amazonie, Québec, Congo</p>
+    </div>
+    <div class="class-card">
+      <h4>💧 Eau</h4>
+      <p>NDVI 0.08-0.14 • Lacs, deltas, baies</p>
+    </div>
+    <div class="class-card">
+      <h4>🏙️ Urbain</h4>
+      <p>NDVI 0.17-0.19 • Tokyo, São Paulo</p>
+    </div>
+    <div class="class-card">
+      <h4>🌾 Agriculture</h4>
+      <p>NDVI 0.58-0.64 • Kansas, Plaine du Pô</p>
+    </div>
+    <div class="class-card">
+      <h4>🏭 Industriel</h4>
+      <p>NDVI 0.11-0.15 • Rotterdam, Casablanca</p>
+    </div>
+  </div>
+
+  <h2>Statistiques</h2>
+  <div class="stats-row">
+    <div class="stat">
+      <span class="stat-number">12</span>
+      <span class="stat-label">Tuiles</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">5</span>
+      <span class="stat-label">Classes</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">89%</span>
+      <span class="stat-label">Confiance</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">6</span>
+      <span class="stat-label">Continents</span>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin:3rem 0">
+    <a href="https://claude.ai/artifact/6iY4Fu63CXXNSHXLPoz2T5" class="cta">Lancer le Dashboard →</a>
+  </div>
+
+  <footer>
+    <p>TerraClass v6.0 • Sentinel-2 L2A (ESA) • <a href="https://github.com/bobsd84000-pixel/BulkDirect-" style="color:#4ade80;text-decoration:none">GitHub</a></p>
+  </footer>
+</div>
+</body>
 </html>

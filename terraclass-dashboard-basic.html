@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TerraClass</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#070c18;color:#e2e8f0}
+.wrap{max-width:1200px;margin:0 auto;padding:1rem}
+header{display:flex;align-items:center;justify-content:space-between;padding:.9rem 0;border-bottom:1px solid #1e293b;margin-bottom:1rem}
+.logo{font-size:1.15rem;font-weight:700}.logo span{color:#4ade80}
+.plan{font-size:.65rem;color:#4ade80;border:1px solid #166534;padding:.25rem .55rem;border-radius:99px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.stat{background:#0d1526;border:1px solid #1e293b;border-radius:8px;padding:.7rem;text-align:center}
+.stat b{display:block;font-size:1.3rem;color:#4ade80}
+.stat span{font-size:.65rem;color:#94a3b8;text-transform:uppercase}
+.filters{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.6rem;margin-bottom:1rem}
+.filters button{white-space:nowrap;background:#0d1526;border:1px solid #1e293b;color:#94a3b8;padding:.45rem .8rem;border-radius:99px;font-size:.75rem;cursor:pointer;font-family:inherit}
+.filters button.on{background:#166534;border-color:#4ade80;color:#dcfce7}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.7rem}
+.card{background:#0d1526;border:1px solid #1e293b;border-radius:10px;overflow:hidden;padding:.6rem}
+.card-img{width:100%;aspect-ratio:1/1;display:block;background:#1a2332;border-radius:4px;margin-bottom:.6rem}
+.card h3{font-size:.8rem;color:#f1f5f9;margin-bottom:.2rem}
+.card p{font-size:.65rem;color:#94a3b8;line-height:1.3;margin-bottom:.35rem}
+.bar{height:3px;background:#1e293b;border-radius:2px;overflow:hidden;margin-bottom:.25rem}
+.bar i{display:block;height:100%;background:#4ade80;width:80%}
+.row{display:flex;justify-content:space-between;font-size:.6rem;color:#64748b;margin-bottom:.25rem}
+.tag{font-size:.55rem;color:#86efac;background:rgba(74,222,128,.1);padding:.15rem .35rem;border-radius:2px;display:inline-block}
+.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:.3rem;margin-top:.3rem;font-size:.5rem;color:#475569}
+footer{text-align:center;font-size:.6rem;color:#475569;padding:1.5rem 0}
+</style></head><body><div class="wrap">
+<header><div class="logo">Terra<span>Class</span></div><div class="plan">v6.0</div></header>
+<div class="stats">
+<div class="stat"><b id="n">12</b><span>Tiles</span></div>
+<div class="stat"><b id="c">5</b><span>Classes</span></div>
+<div class="stat"><b id="a">89%</b><span>Conf</span></div>
+</div>
+<div class="filters" id="f"></div>
+<div class="grid" id="g"></div>
+<footer>Sentinel-2 L2A - v6.0</footer>
+</div>
+<script>
+var D = [
+ {id:'S2-001',titre:'Industrial Casablanca',desc:'Industrial class',classe:'Industrial',conf:82,ndvi:0.15,date:'2024-09-15',coords:'33.57N,7.59W',color:'#404040'},
+ {id:'S2-002',titre:'Manufacturing Paris',desc:'Industrial class',classe:'Industrial',conf:83,ndvi:0.12,date:'2024-09-14',coords:'48.86N,2.35E',color:'#505050'},
+ {id:'S2-003',titre:'Amazon Basin',desc:'Forest class',classe:'Forest',conf:91,ndvi:0.82,date:'2024-09-12',coords:'3.46S,62.21W',color:'#2d5016'},
+ {id:'S2-004',titre:'Boreal Quebec',desc:'Forest class',classe:'Forest',conf:88,ndvi:0.76,date:'2024-09-11',coords:'48.42N,71.06W',color:'#3d6b1f'},
+ {id:'S2-005',titre:'Congo Canopy',desc:'Forest class',classe:'Forest',conf:93,ndvi:0.85,date:'2024-09-10',coords:'0.52S,15.28E',color:'#4d8b2f'},
+ {id:'S2-006',titre:'Lake Geneva',desc:'Water class',classe:'Water',conf:96,ndvi:0.08,date:'2024-09-13',coords:'46.45N,6.52E',color:'#1e5a8e'},
+ {id:'S2-007',titre:'Nile Delta',desc:'Water class',classe:'Water',conf:94,ndvi:0.14,date:'2024-09-09',coords:'31.24N,31.81E',color:'#2a7cb5'},
+ {id:'S2-008',titre:'Tokyo Bay',desc:'Urban class',classe:'Urban',conf:89,ndvi:0.19,date:'2024-09-14',coords:'35.62N,139.77E',color:'#303030'},
+ {id:'S2-009',titre:'Sao Paulo Centro',desc:'Urban class',classe:'Urban',conf:87,ndvi:0.17,date:'2024-09-08',coords:'23.55S,46.63W',color:'#404040'},
+ {id:'S2-010',titre:'Kansas Fields',desc:'Agriculture class',classe:'Agriculture',conf:92,ndvi:0.64,date:'2024-09-15',coords:'38.51N,98.32W',color:'#6b8e23'},
+ {id:'S2-011',titre:'Po Valley',desc:'Agriculture class',classe:'Agriculture',conf:90,ndvi:0.58,date:'2024-09-12',coords:'45.07N,10.42E',color:'#8ba23d'},
+ {id:'S2-012',titre:'Rotterdam Port',desc:'Industrial class',classe:'Industrial',conf:85,ndvi:0.11,date:'2024-09-13',coords:'51.92N,4.48E',color:'#606060'}
+];
+
+var cur = 'Toutes';
+var g = document.getElementById('g');
+var f = document.getElementById('f');
+
+function parseCoords(s) {
+  var parts = s.split(',');
+  var latStr = parts[0];
+  var lonStr = parts[1];
+  var lat = parseFloat(latStr);
+  if (latStr.indexOf('S') !== -1) lat = -lat;
+  var lon = parseFloat(lonStr);
+  if (lonStr.indexOf('W') !== -1) lon = -lon;
+  return {lat: lat, lon: lon};
+}
+
+function nasaSnapshotUrl(d) {
+  var c = parseCoords(d.coords);
+  var half = 0.15;
+  var west = c.lon - half;
+  var south = c.lat - half;
+  var east = c.lon + half;
+  var north = c.lat + half;
+  return 'https://wvs.earthdata.nasa.gov/api/v1/snapshot?REQUEST=GetSnapshot&TIME=' + d.date +
+    '&BBOX=' + south + ',' + west + ',' + north + ',' + east +
+    '&CRS=EPSG:4326&LAYERS=Sentinel-2_L2A_True_Color&WRAP=DAY&FORMAT=image/jpeg&WIDTH=320&HEIGHT=320';
+}
+
+function render() {
+  g.innerHTML = '';
+  var classes = {};
+
+  for(var i=0; i<D.length; i++) {
+    var d = D[i];
+    if(cur !== 'Toutes' && d.classe !== cur) continue;
+
+    classes[d.classe] = 1;
+
+    var card = document.createElement('div');
+    card.className = 'card';
+
+    var img = document.createElement('img');
+    img.className = 'card-img';
+    img.loading = 'lazy';
+    img.alt = d.titre;
+    img.src = nasaSnapshotUrl(d);
+    img.onerror = (function(dd) {
+      return function() {
+        var canvas = document.createElement('canvas');
+        canvas.width = 160;
+        canvas.height = 160;
+        canvas.className = 'card-img';
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = dd.color;
+        ctx.fillRect(0, 0, 160, 160);
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        for(var j=0; j<10; j++) {
+          ctx.fillRect(Math.random()*160, Math.random()*160, 20, 20);
+        }
+        this.parentNode.replaceChild(canvas, this);
+      };
+    })(d);
+    card.appendChild(img);
+
+    var h3 = document.createElement('h3');
+    h3.textContent = d.titre;
+    card.appendChild(h3);
+
+    var p = document.createElement('p');
+    p.textContent = d.desc;
+    card.appendChild(p);
+
+    var bar = document.createElement('div');
+    bar.className = 'bar';
+    var i_el = document.createElement('i');
+    i_el.style.width = d.conf + '%';
+    bar.appendChild(i_el);
+    card.appendChild(bar);
+
+    var row = document.createElement('div');
+    row.className = 'row';
+    var r1 = document.createElement('span');
+    r1.textContent = d.id;
+    row.appendChild(r1);
+    var r2 = document.createElement('span');
+    r2.textContent = d.conf + '%';
+    row.appendChild(r2);
+    card.appendChild(row);
+
+    var tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = d.classe;
+    card.appendChild(tag);
+
+    var meta = document.createElement('div');
+    meta.className = 'meta';
+    var s1 = document.createElement('span');
+    s1.textContent = d.coords;
+    meta.appendChild(s1);
+    var s2 = document.createElement('span');
+    s2.textContent = d.date;
+    meta.appendChild(s2);
+    var s3 = document.createElement('span');
+    s3.textContent = 'NDVI:' + d.ndvi.toFixed(2);
+    meta.appendChild(s3);
+    card.appendChild(meta);
+
+    g.appendChild(card);
+  }
+
+  document.getElementById('n').textContent = g.children.length;
+  document.getElementById('c').textContent = Object.keys(classes).length;
+}
+
+function initFilters() {
+  var cls = ['Toutes'];
+  for(var i=0; i<D.length; i++) {
+    if(cls.indexOf(D[i].classe) === -1) {
+      cls.push(D[i].classe);
+    }
+  }
+
+  for(var i=0; i<cls.length; i++) {
+    var c = cls[i];
+    var b = document.createElement('button');
+    b.textContent = c;
+    if(c === 'Toutes') b.className = 'on';
+    b.onclick = (function(cc) {
+      return function() {
+        cur = cc;
+        var btns = f.getElementsByTagName('button');
+        for(var j=0; j<btns.length; j++) btns[j].className = '';
+        this.className = 'on';
+        render();
+      };
+    })(c);
+    f.appendChild(b);
+  }
+}
+
+initFilters();
+render();
+</script></body></html>
