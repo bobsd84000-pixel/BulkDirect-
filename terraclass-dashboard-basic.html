@@ -60,6 +60,29 @@ var cur = 'Toutes';
 var g = document.getElementById('g');
 var f = document.getElementById('f');
 
+function parseCoords(s) {
+  var parts = s.split(',');
+  var latStr = parts[0];
+  var lonStr = parts[1];
+  var lat = parseFloat(latStr);
+  if (latStr.indexOf('S') !== -1) lat = -lat;
+  var lon = parseFloat(lonStr);
+  if (lonStr.indexOf('W') !== -1) lon = -lon;
+  return {lat: lat, lon: lon};
+}
+
+function nasaSnapshotUrl(d) {
+  var c = parseCoords(d.coords);
+  var half = 0.15;
+  var west = c.lon - half;
+  var south = c.lat - half;
+  var east = c.lon + half;
+  var north = c.lat + half;
+  return 'https://wvs.earthdata.nasa.gov/api/v1/snapshot?REQUEST=GetSnapshot&TIME=' + d.date +
+    '&BBOX=' + south + ',' + west + ',' + north + ',' + east +
+    '&CRS=EPSG:4326&LAYERS=Sentinel-2_L2A_True_Color&WRAP=DAY&FORMAT=image/jpeg&WIDTH=320&HEIGHT=320';
+}
+
 function render() {
   g.innerHTML = '';
   var classes = {};
@@ -73,18 +96,28 @@ function render() {
     var card = document.createElement('div');
     card.className = 'card';
 
-    var canvas = document.createElement('canvas');
-    canvas.width = 160;
-    canvas.height = 160;
-    canvas.className = 'card-img';
-    var ctx = canvas.getContext('2d');
-    ctx.fillStyle = d.color;
-    ctx.fillRect(0, 0, 160, 160);
-    ctx.fillStyle = 'rgba(255,255,255,0.1)';
-    for(var j=0; j<10; j++) {
-      ctx.fillRect(Math.random()*160, Math.random()*160, 20, 20);
-    }
-    card.appendChild(canvas);
+    var img = document.createElement('img');
+    img.className = 'card-img';
+    img.loading = 'lazy';
+    img.alt = d.titre;
+    img.src = nasaSnapshotUrl(d);
+    img.onerror = (function(dd) {
+      return function() {
+        var canvas = document.createElement('canvas');
+        canvas.width = 160;
+        canvas.height = 160;
+        canvas.className = 'card-img';
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = dd.color;
+        ctx.fillRect(0, 0, 160, 160);
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        for(var j=0; j<10; j++) {
+          ctx.fillRect(Math.random()*160, Math.random()*160, 20, 20);
+        }
+        this.parentNode.replaceChild(canvas, this);
+      };
+    })(d);
+    card.appendChild(img);
 
     var h3 = document.createElement('h3');
     h3.textContent = d.titre;
