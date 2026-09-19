@@ -1,0 +1,23 @@
+{
+  "name": "codex-plugin-cc",
+  "version": "1.0.0",
+  "description": "Codex Claude review setup and diagnostics for BulkDirect",
+  "type": "module",
+  "bin": {
+    "codex-claude-review": "./bin/codex-claude-review.js"
+  },
+  "scripts": {
+    "test": "node bin/codex-claude-review.js doctor"
+  },
+  "keywords": [
+    "codex",
+    "claude",
+    "review",
+    "bulkdirect"
+  ],
+  "author": "Anthropic",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

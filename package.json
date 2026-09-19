@@ -2,11 +2,16 @@
   "name": "bulkdirect",
   "version": "1.0.0",
   "type": "module",
+  "bin": {
+    "codex": "./bin/codex.js"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext js,jsx"
+    "lint": "eslint src --ext js,jsx",
+    "codex:doctor": "node bin/codex.js doctor",
+    "codex:help": "node bin/codex.js --help"
   },
   "dependencies": {
     "react": "^18.3.1",

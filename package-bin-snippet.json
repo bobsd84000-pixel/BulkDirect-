@@ -1,0 +1,9 @@
+{
+  "bin": {
+    "codex": "./bin/codex.js"
+  },
+  "scripts": {
+    "codex:doctor": "node bin/codex.js doctor",
+    "codex:help": "node bin/codex.js --help"
+  }
+}
