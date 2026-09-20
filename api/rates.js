@@ -1,9 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 'max-age=60');
-
+export async function GET(req) {
   try {
     const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const data = await response.json();
@@ -13,7 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     for (const currency of pairs) {
       const rate = data.rates[currency];
-      const prev = rate * 0.995; // Simulation variation
+      const prev = rate * 0.995;
       const change = ((rate - prev) / prev) * 100;
 
       rates[`USD/${currency}`] = {
@@ -24,9 +19,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     }
 
-    res.status(200).json(rates);
+    return new Response(JSON.stringify(rates), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'max-age=60'
+      }
+    });
   } catch (error) {
     console.error('API Error:', error);
-    res.status(500).json({ error: 'Failed to fetch rates' });
+    return new Response(
+      JSON.stringify({ error: 'Failed to fetch rates' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }
