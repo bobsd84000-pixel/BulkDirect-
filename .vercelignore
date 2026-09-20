@@ -1,0 +1,6 @@
+src
+dist
+node_modules
+*.test.js
+.git
+README.md
