@@ -1,0 +1,181 @@
+# Agent Scout Reddit - Agent Configuration
+
+agents:
+
+  scout:
+    name: Scout Agent
+    type: scout
+    description: Discovers and extracts B2B leads from Reddit
+    config:
+      timeout: 30000
+      maxRetries: 3
+      retryDelay: 1000
+      logLevel: info
+      maxConcurrent: 5
+    subreddits:
+      - r/SaaS
+      - r/Entrepreneur
+      - r/startup
+      - r/webdev
+      - r/django
+    scanFrequency: 5m
+    qualityThreshold: 0.4
+
+  qualifier:
+    name: Qualifier Agent
+    type: qualifier
+    description: Validates and qualifies discovered leads
+    config:
+      timeout: 30000
+      maxRetries: 2
+      retryDelay: 1000
+      logLevel: info
+      maxConcurrent: 8
+    qualityThreshold: 0.4
+    confidenceThreshold: 0.6
+    tieringRules:
+      tier1: 0.85
+      tier2: 0.60
+      tier3: 0.40
+
+  router:
+    name: Router Agent
+    type: router
+    description: Routes qualified leads to service providers
+    config:
+      timeout: 15000
+      maxRetries: 2
+      retryDelay: 500
+      logLevel: info
+      maxConcurrent: 5
+    strategy: balanced
+    maxQueuePerProvider: 10
+    fallbackEnabled: true
+
+  orchestrator:
+    name: Orchestrator Agent
+    type: orchestrator
+    description: Coordinates the entire swarm
+    config:
+      timeout: 60000
+      maxRetries: 0
+      logLevel: info
+    checkInterval: 1m
+    alertWebhook: ${ALERT_WEBHOOK_URL}
+    slaThresholds:
+      scoutToQualifyLatency: 5m
+      qualifyToRouteLatency: 2m
+      routeNotificationLatency: 30s
+      agentHealthCheck: 5m
+
+# Swarm configuration
+swarm:
+  name: Agent Scout Reddit
+  healthCheckInterval: 5000
+  metricsInterval: 10000
+  logLevel: info
+
+# Provider routing configuration
+providers:
+  - id: provider_001
+    name: AcmeCorp Solutions
+    industries: [SaaS, B2B, E-commerce]
+    stages: [growth, mature]
+    tiers: [1, 2]
+    maxConcurrent: 20
+    webhook: ${PROVIDER_001_WEBHOOK}
+    specialization: SaaS growth & scaling
+
+  - id: provider_002
+    name: StartupBoost
+    industries: [Startup, SaaS]
+    stages: [early, growth]
+    tiers: [2, 3]
+    maxConcurrent: 15
+    webhook: ${PROVIDER_002_WEBHOOK}
+    specialization: Early-stage SaaS founding
+
+  - id: provider_003
+    name: Enterprise Solutions
+    industries: [Enterprise, B2B]
+    stages: [mature]
+    tiers: [1]
+    maxConcurrent: 10
+    webhook: ${PROVIDER_003_WEBHOOK}
+    specialization: Enterprise implementation
+
+# Reddit API Configuration
+reddit:
+  clientId: ${REDDIT_CLIENT_ID}
+  clientSecret: ${REDDIT_CLIENT_SECRET}
+  username: ${REDDIT_USERNAME}
+  password: ${REDDIT_PASSWORD}
+  userAgent: Agent-Scout-Reddit/1.0 (by ${REDDIT_USERNAME})
+  rateLimitDelay: 2000
+  requestTimeout: 10000
+
+# Company Enrichment APIs
+enrichment:
+  clearbit:
+    apiKey: ${CLEARBIT_API_KEY}
+    enabled: true
+
+  hunter:
+    apiKey: ${HUNTER_API_KEY}
+    enabled: true
+
+  apollo:
+    apiKey: ${APOLLO_API_KEY}
+    enabled: true
+
+# Database Configuration
+database:
+  type: postgresql
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  database: ${DB_NAME}
+  username: ${DB_USER}
+  password: ${DB_PASSWORD}
+  ssl: true
+  connectionPoolSize: 20
+
+# Redis Configuration (for caching & rate limiting)
+redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+  password: ${REDIS_PASSWORD}
+  db: 0
+  ttl: 3600
+
+# Monitoring & Alerting
+monitoring:
+  enabled: true
+  provider: datadog
+  apiKey: ${DATADOG_API_KEY}
+  environment: ${ENVIRONMENT}
+  serviceName: agent-scout-reddit
+
+  alerts:
+    - name: high_error_rate
+      condition: errorRate > 0.05
+      severity: critical
+
+    - name: agent_stuck
+      condition: agentProcessingTime > 60s
+      severity: high
+
+    - name: low_lead_quality
+      condition: qualificationRate < 0.4
+      severity: medium
+
+    - name: provider_overload
+      condition: providerQueueSize > 20
+      severity: high
+
+# Feature Flags
+features:
+  enableRetryLogic: true
+  enableFallbackRouting: true
+  enableMetricsCollection: true
+  enableHealthChecks: true
+  enableBatch processing: false
